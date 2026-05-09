@@ -40,7 +40,15 @@ Return a JSON array of 3 objects with keys: "explanation", "highlightedPros" (ar
 
     const result = await model.generateContent(prompt);
     const responseText = result.response.text();
-    const parsed = JSON.parse(responseText);
+    console.log("Raw Gemini Response:", responseText);
+    
+    let parsed;
+    try {
+      parsed = JSON.parse(responseText);
+    } catch (e) {
+      console.error("Failed to parse Gemini JSON. Falling back to universal summaries.");
+      return recommendations.map(rec => applyFallback(rec, prefs));
+    }
 
     return recommendations.map((rec, i) => {
       if (parsed[i]) {
@@ -49,26 +57,28 @@ Return a JSON array of 3 objects with keys: "explanation", "highlightedPros" (ar
         rec.highlightedPros = parsed[i].highlightedPros || JSON.parse(rec.car.pros as unknown as string).slice(0, 2);
         rec.highlightedCons = parsed[i].highlightedCons || JSON.parse(rec.car.cons as unknown as string).slice(0, 2);
       } else {
-        applyFallback(rec);
+        applyFallback(rec, prefs);
       }
       return rec;
     });
   } catch (error) {
     console.error("Gemini API error:", error);
-    // Fallback if Gemini fails
-    return recommendations.map(applyFallback);
+    // Fallback if Gemini fails entirely
+    return recommendations.map(rec => applyFallback(rec, prefs));
   }
 }
 
-function applyFallback(rec: Recommendation): Recommendation {
-  rec.explanation = `Optimal alignment with your requirements. The ${rec.car.bodyType} architecture perfectly matches your specified daily usage.`;
+function applyFallback(rec: Recommendation, prefs: UserPreferences): Recommendation {
+  const budgetText = prefs.budget ? `within your ${prefs.budget}L budget` : "for your requirements";
+  
+  rec.explanation = `The ${rec.car.make} ${rec.car.model} is an excellent choice ${budgetText}. It offers a balanced mix of ${rec.car.mileage} kmpl efficiency and ${rec.car.safetyRating}-star safety, making it ideal for ${prefs.usage || "daily"} usage.`;
   
   try {
     rec.highlightedPros = JSON.parse(rec.car.pros as string).slice(0, 2);
     rec.highlightedCons = JSON.parse(rec.car.cons as string).slice(0, 2);
   } catch {
-    rec.highlightedPros = ["Great styling", "Reliable engine"];
-    rec.highlightedCons = ["Average tech", "Firm ride"];
+    rec.highlightedPros = ["Reliable Performance", "Value for Money"];
+    rec.highlightedCons = ["Standard Tech", "Segment Average Ride"];
   }
   
   return rec;
