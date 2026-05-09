@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { scoreCars } from "@/lib/scoring";
 import { generateExplanations } from "@/lib/gemini";
 import { UserPreferences } from "@/types";
+import fs from "fs";
+import path from "path";
 
 export async function POST(request: Request) {
   try {

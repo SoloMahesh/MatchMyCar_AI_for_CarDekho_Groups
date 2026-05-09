@@ -80,4 +80,15 @@ Navigate to `http://localhost:3000`.
 
 ---
 
+## 🌍 Vercel Deployment Note
+
+This project uses **SQLite**, which is a file-based database. In a serverless environment like Vercel, the file system is ephemeral. 
+
+**How I fixed this:**
+1.  **Build-Time Seeding:** The database is pushed and seeded during the `build` phase on Vercel's servers.
+2.  **Absolute Path Injection:** The Prisma client is configured (`lib/prisma.ts`) to use an absolute path via `process.cwd()` to locate the database file at runtime, bypassing the relative path limitations of Vercel Functions.
+3.  **External Packaging:** The `@prisma/client` is marked as an external package in `next.config.ts` to ensure it is bundled correctly with the SQLite engine.
+
+---
+
 **Developed with 🧡 for the CarDekho Engineering Challenge.**

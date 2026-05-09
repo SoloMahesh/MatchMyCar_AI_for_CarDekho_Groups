@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma db push --accept-data-loss && npx ts-node prisma/seed.ts && next build",
+    "build": "prisma generate && export DATABASE_URL=\"file:$(pwd)/prisma/dev.db\" && prisma db push --accept-data-loss && npx tsx prisma/seed.ts && ls -R prisma && next build",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate"
@@ -27,6 +27,7 @@
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
