@@ -10,7 +10,7 @@
 | **Product Name** | CarDekho Genius (CDG) |
 | **Tagline** | *"Find your perfect car in 60 seconds."* |
 | **Version** | 1.0 |
-| **Author** | Mahesh Palaparthi |
+| **Author** | SoloMahesh |
 | **Created** | 2026-05-09 |
 | **Status** | Draft — Awaiting Review |
 
